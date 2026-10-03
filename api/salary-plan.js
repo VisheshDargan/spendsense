@@ -8,7 +8,7 @@
 //   SUPABASE_URL           - https://<project>.supabase.co
 //   SUPABASE_SERVICE_KEY    - Supabase service_role key (server-side only)
 
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const MAX_OUTPUT_TOKENS = 300;
 const MAX_REQUESTS_PER_VISITOR = 5;
 
