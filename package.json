@@ -1,0 +1,9 @@
+{
+  "name": "spendsense-landing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SpendSense landing page + 'Where does my salary go?' live demo feature (Vercel + Gemini + Supabase)",
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
