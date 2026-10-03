@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpendSense — Find the money you forgot you were spending</title>
+<meta name="description" content="Upload a bank or credit card PDF. See every subscription, every rupee, in under 30 seconds. No bank access, no SMS permissions.">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --bg-soft:#11161d;
+    --card:#161c25;
+    --border:#232b36;
+    --text:#eef2f6;
+    --muted:#93a0b2;
+    --accent:#5eead4;
+    --accent-2:#a78bfa;
+    --danger:#fb7185;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  header{position:sticky;top:0;z-index:50;background:rgba(11,15,20,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-0.02em;}
+  .logo-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .navlinks{display:flex;gap:28px;font-size:14px;color:var(--muted);}
+  .navlinks a:hover{color:var(--text);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid transparent;cursor:pointer;transition:transform .15s ease,opacity .15s ease;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#38bdf8);color:#04171a;}
+  .btn-primary:hover{transform:translateY(-1px);opacity:.92;}
+  .btn-ghost{border:1px solid var(--border);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--muted);}
+  section{padding:88px 0;}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--bg-soft);border:1px solid var(--border);color:var(--accent);font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;margin-bottom:22px;}
+  .hero{padding-top:72px;padding-bottom:40px;}
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;}
+  h1{font-size:50px;line-height:1.08;letter-spacing:-0.02em;font-weight:800;margin-bottom:22px;}
+  h1 .accent{color:var(--accent);}
+  .sub{font-size:18px;color:var(--muted);max-width:520px;margin-bottom:32px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+  .microcopy{font-size:13px;color:var(--muted);}
+  .mock{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);}
+  .mock-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .mock-head span{font-size:13px;color:var(--muted);}
+  .mock-upload{border:1.5px dashed var(--border);border-radius:12px;padding:22px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px;}
+  .sub-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg-soft);border-radius:10px;margin-bottom:10px;font-size:14px;}
+  .sub-row .name{display:flex;align-items:center;gap:10px;font-weight:600;}
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot-amber{background:#fbbf24;}
+  .dot-rose{background:var(--danger);}
+  .dot-teal{background:var(--accent);}
+  .amt{color:var(--muted);font-size:13px;}
+  .total{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);font-weight:700;font-size:15px;}
+  .total span:last-child{color:var(--danger);}
+  .section-head{text-align:center;max-width:680px;margin:0 auto 48px;}
+  .section-head h2{font-size:34px;letter-spacing:-0.02em;font-weight:800;margin-bottom:14px;}
+  .section-head p{color:var(--muted);font-size:16px;}
+  .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;}
+  .card .num{font-size:34px;font-weight:800;color:var(--accent);margin-bottom:10px;}
+  .card h3{font-size:17px;margin-bottom:10px;font-weight:700;}
+  .card p{color:var(--muted);font-size:14.5px;}
+  .loop{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;position:relative;}
+  .step .idx{width:34px;height:34px;border-radius:10px;background:var(--bg-soft);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);margin-bottom:16px;}
+  .step h4{font-size:16px;margin-bottom:8px;}
+  .step p{font-size:13.5px;color:var(--muted);}
+  .testimonial{background:linear-gradient(135deg,rgba(94,234,212,.08),rgba(167,139,250,.08));border:1px solid var(--border);border-radius:20px;padding:44px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;}
+  .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),#38bdf8);flex-shrink:0;}
+  .testimonial blockquote{font-size:19px;line-height:1.5;margin-bottom:14px;}
+  .testimonial cite{color:var(--muted);font-size:14px;font-style:normal;}
+  .pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:760px;margin:0 auto;}
+  .price-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;}
+  .price-card.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+  .price-card h3{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+  .price-card .price{font-size:38px;font-weight:800;margin-bottom:4px;}
+  .price-card .price span{font-size:14px;color:var(--muted);font-weight:500;}
+  .price-card ul{list-style:none;margin:20px 0 26px;color:var(--muted);font-size:14.5px;}
+  .price-card li{padding:7px 0;display:flex;gap:10px;}
+  .price-card li::before{content:"✓";color:var(--accent);font-weight:700;}
+  .cta-final{text-align:center;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:64px 32px;}
+  .cta-final h2{font-size:32px;margin-bottom:14px;font-weight:800;}
+  .cta-final p{color:var(--muted);margin-bottom:28px;}
+  footer{border-top:1px solid var(--border);padding:32px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;}
+  @media (max-width:860px){
+    .hero-grid,.problem-grid,.loop,.pricing-grid{grid-template-columns:1fr;}
+    h1{font-size:34px;}
+    .navlinks{display:none;}
+    .testimonial{grid-template-columns:1fr;}
+    section{padding:56px 0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="logo"><span class="logo-mark">₹</span>SpendSense</div>
+      <div class="navlinks">
+        <a href="#problem">Problem</a>
+        <a href="#how">How it works</a>
+        <a href="#try">Try it</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <a href="#waitlist" class="btn btn-primary">Get early access</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill">🔒 No bank access. No SMS permissions. Just a PDF.</span>
+      <h1>Find the money <span class="accent">you forgot</span> you were spending.</h1>
+      <p class="sub">Upload your bank or credit card statement. In under 30 seconds, SpendSense shows you every subscription, every category, and the ₹3,000/month in UPI taps you never noticed.</p>
+      <div class="cta-row">
+        <a href="#waitlist" class="btn btn-primary">Join early access →</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+      <p class="microcopy">Works with HDFC, ICICI, SBI, Kotak, Axis &amp; more. Free for your first statement.</p>
+    </div>
+    <div class="mock">
+      <div class="mock-head"><strong>Your subscriptions</strong><span>March statement</span></div>
+      <div class="mock-upload">📄 hdfc_statement_march.pdf — parsed in 22s</div>
+      <div class="sub-row"><div class="name"><span class="dot dot-rose"></span>Audible</div><span class="amt">₹199/mo · unused 8 months</span></div>
+      <div class="sub-row"><div class="name"><span class="dot dot-amber"></span>YouTube Premium + Spotify</div><span class="amt">₹258/mo · overlapping</span></div>
+      <div class="sub-row"><div class="name"><span class="dot dot-teal"></span>Swiggy One</div><span class="amt">₹149/mo · active</span></div>
+      <div class="total"><span>Recurring this month</span><span>₹1,540</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Subscriptions are designed to be invisible</h2>
+      <p>The average urban Indian carries 10–15 recurring charges. Most can name maybe half of them.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="card">
+        <div class="num">8 mo.</div>
+        <h3>of paying for nothing</h3>
+        <p>Riya, 27, PM in Bengaluru, paid ₹499/month for Audible for 8 months without opening the app once. She found out by accident, reading a statement line by line.</p>
+      </div>
+      <div class="card">
+        <div class="num">₹3,000</div>
+        <h3>a month that never registered</h3>
+        <p>UPI made spending frictionless — a ₹250 Swiggy order, three times a week, adds up to a number that was never a single decision.</p>
+      </div>
+      <div class="card">
+        <div class="num">₹40K or ₹80K?</div>
+        <h3>Amit genuinely doesn't know</h3>
+        <p>A small business owner in Jaipur mixes personal and business spend in the same account. By month-end it all blurs together — no breakdown, no clarity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>One upload. Four things happen.</h2>
+      <p>No linking your bank. No reading your SMS. Just the statement you already get every month.</p>
+    </div>
+    <div class="loop">
+      <div class="step"><div class="idx">1</div><h4>Upload</h4><p>Drop in your bank or card PDF. We extract every transaction — no credentials, no API, no SMS access.</p></div>
+      <div class="step"><div class="idx">2</div><h4>Categorize</h4><p>Food delivery, OTT, transport, EMIs and 8 more — auto-tagged. Correct one, and the system remembers.</p></div>
+      <div class="step"><div class="idx">3</div><h4>Insight</h4><p>A category breakdown, a dedicated subscriptions panel with renewal dates, and month-over-month trends.</p></div>
+      <div class="step"><div class="idx">4</div><h4>Act</h4><p>One-tap links to cancel or downgrade. Set a dining budget and get nudged at 80%.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <div class="testimonial">
+      <div class="avatar"></div>
+      <div>
+        <blockquote>"I paid ₹499/month for Audible for 8 months without listening to a single book. I only found out when I finally sat down and read my credit card statement, line by line. Unlike CRED Money or a bank app, SpendSense doesn't need to link to anything — it just reads the PDF statement you already get, from any bank. I built this after going through 14 months of my own statements by hand. We're opening early access to 500 users this month — comment 'SUBSCRIPTION' and I'll send you the link."</blockquote>
+        <cite>— Founder, SpendSense · launch post, Sep 2026</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="try-feature" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Try it: where does YOUR salary go?</h2>
+      <p>Move the sliders to roughly match your month. SpendSense will flag what's out of line and name two real cuts — for free, right now.</p>
+    </div>
+
+    <div class="card" style="max-width:640px;margin:0 auto;">
+      <label style="display:block;font-size:14px;color:var(--muted);margin-bottom:6px;">Monthly take-home pay: ₹<span id="takeHomeVal">60,000</span></label>
+      <input type="range" id="takeHome" min="20000" max="300000" step="5000" value="60000" style="width:100%;margin-bottom:20px;">
+
+      <div id="sliders"></div>
+
+      <textarea id="note" placeholder="Optional: anything specific you're trying to fix? (e.g. 'I keep overspending on food delivery')" maxlength="300"
+        style="width:100%;margin-top:14px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;min-height:60px;"></textarea>
+
+      <button id="generateBtn" class="btn btn-primary" style="margin-top:16px;width:100%;justify-content:center;">Generate my plan →</button>
+      <p id="capNote" class="microcopy" style="margin-top:10px;"></p>
+
+      <div id="result" style="display:none;margin-top:22px;padding:18px;background:var(--bg);border:1px solid var(--border);border-radius:12px;white-space:pre-wrap;font-size:14.5px;"></div>
+
+      <div id="statsRow" style="display:none;margin-top:16px;gap:24px;font-size:13px;color:var(--muted);">
+        <span>📊 <strong id="plansGenerated">0</strong> plans generated so far</span>
+        <span>💰 Avg. identified saving: ₹<strong id="avgSaving">0</strong>/month</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Free enough to build the habit</h2>
+      <p>Pay only when you want the full picture.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Free</h3>
+        <div class="price">₹0</div>
+        <ul>
+          <li>1 statement upload / month</li>
+          <li>Spending dashboard</li>
+          <li>Subscription detection</li>
+          <li>3-month history</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-ghost" style="width:100%;justify-content:center;">Start free</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Pro</h3>
+        <div class="price">₹99<span>/month</span></div>
+        <ul>
+          <li>Unlimited statements</li>
+          <li>Multi-account merge</li>
+          <li>12-month trends &amp; budget alerts</li>
+          <li>Family view (up to 3) + WhatsApp bot</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-primary" style="width:100%;justify-content:center;">Get early access</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap">
+    <div class="cta-final">
+      <h2>Your next statement is already late.</h2>
+      <p>Join the early access list — we'll email you the moment your cohort opens up.</p>
+      <div class="cta-row" style="justify-content:center;">
+        <a href="#" class="btn btn-primary">Join the waitlist →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;">
+    <span>© 2026 SpendSense. Built for India.</span>
+    <span>Privacy-first · No bank API · No SMS access</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const CATS = [
+    { key: "food", label: "Food & Delivery", def: 8000, max: 40000 },
+    { key: "rent", label: "Rent / EMI", def: 18000, max: 100000 },
+    { key: "transport", label: "Transport", def: 4000, max: 20000 },
+    { key: "subscriptions", label: "Subscriptions & Entertainment", def: 1500, max: 10000 },
+    { key: "shopping", label: "Shopping / Other", def: 6000, max: 30000 },
+  ];
+
+  const slidersEl = document.getElementById("sliders");
+  CATS.forEach((c) => {
+    const row = document.createElement("div");
+    row.style.marginBottom = "14px";
+    row.innerHTML = `
+      <label style="display:block;font-size:14px;color:var(--muted);margin-bottom:6px;">
+        ${c.label}: ₹<span id="${c.key}Val">${c.def.toLocaleString()}</span>
+      </label>
+      <input type="range" id="${c.key}" min="0" max="${c.max}" step="500" value="${c.def}" style="width:100%;">
+    `;
+    slidersEl.appendChild(row);
+    const input = row.querySelector("input");
+    const out = row.querySelector("span");
+    input.addEventListener("input", () => (out.textContent = Number(input.value).toLocaleString()));
+  });
+
+  const takeHomeInput = document.getElementById("takeHome");
+  takeHomeInput.addEventListener("input", () => {
+    document.getElementById("takeHomeVal").textContent = Number(takeHomeInput.value).toLocaleString();
+  });
+
+  // Anonymous, random, per-browser visitor id — stored only in this
+  // tab's memory for this demo (no cookies/localStorage needed for
+  // the assignment; a real app would persist this).
+  const visitorId = "visitor_" + Math.random().toString(36).slice(2, 10);
+  let requestCount = 0;
+  const MAX_REQUESTS = 5;
+
+  document.getElementById("generateBtn").addEventListener("click", async () => {
+    if (requestCount >= MAX_REQUESTS) return;
+    const btn = document.getElementById("generateBtn");
+    btn.disabled = true;
+    btn.textContent = "Thinking…";
+
+    const categories = {};
+    CATS.forEach((c) => (categories[c.key] = Number(document.getElementById(c.key).value)));
+
+    try {
+      const resp = await fetch("/api/salary-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          takeHome: Number(takeHomeInput.value),
+          categories,
+          note: document.getElementById("note").value,
+          visitorId,
+        }),
+      });
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        document.getElementById("capNote").textContent = data.error || "Something went wrong.";
+      } else {
+        requestCount++;
+        const resultEl = document.getElementById("result");
+        resultEl.style.display = "block";
+        resultEl.textContent = data.plan;
+
+        document.getElementById("statsRow").style.display = "flex";
+        document.getElementById("plansGenerated").textContent = data.stats.plansGenerated;
+        document.getElementById("avgSaving").textContent = data.stats.avgSaving.toLocaleString();
+
+        document.getElementById("capNote").textContent =
+          `${MAX_REQUESTS - requestCount} free plan(s) left in this demo.`;
+      }
+    } catch (e) {
+      document.getElementById("capNote").textContent = "Network error — please try again.";
+    } finally {
+      btn.disabled = requestCount >= MAX_REQUESTS;
+      btn.textContent = requestCount >= MAX_REQUESTS ? "Demo limit reached" : "Generate my plan →";
+    }
+  });
+})();
+</script>
+</body>
+</html>
